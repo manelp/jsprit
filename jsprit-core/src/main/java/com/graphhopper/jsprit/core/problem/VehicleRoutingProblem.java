@@ -157,14 +157,7 @@ public class VehicleRoutingProblem {
          * @return locations
          */
         public Locations getLocations() {
-            return new Locations() {
-
-                @Override
-                public Coordinate getCoord(String id) {
-                    return tentative_coordinates.get(id);
-                }
-
-            };
+            return id -> tentative_coordinates.get(id);
         }
 
         /**
@@ -421,6 +414,17 @@ public class VehicleRoutingProblem {
             return this;
         }
 
+        private final List<AbstractActivity> nonJobActivities = new ArrayList<>();
+
+        public Builder addNonJobActivities(Collection<? extends AbstractActivity> nonJobActivities) {
+            for (AbstractActivity act : nonJobActivities) {
+                act.setIndex(activityIndexCounter);
+                incActivityIndexCounter();
+                this.nonJobActivities.add(act);
+            }
+            return this;
+        }
+
         /**
          * Builds the {@link VehicleRoutingProblem}.
          * <p>
@@ -513,7 +517,6 @@ public class VehicleRoutingProblem {
         }
 
         private Builder addService(Service service) {
-//            tentative_coordinates.put(service.getLocation().getId(), service.getLocation().getCoordinate());
             addLocationToTentativeLocations(service);
             if (jobs.containsKey(service.getId())) {
                 logger.warn("The service " + service + " has already been added to job list. This overrides existing job.");
@@ -579,14 +582,7 @@ public class VehicleRoutingProblem {
 
     private int nuActivities;
 
-    private final JobActivityFactory jobActivityFactory = new JobActivityFactory() {
-
-        @Override
-        public List<AbstractActivity> createActivities(Job job) {
-            return copyAndGetActivities(job);
-        }
-
-    };
+    private final JobActivityFactory jobActivityFactory = job -> copyAndGetActivities(job);
 
     private VehicleRoutingProblem(Builder builder) {
         this.jobs = builder.jobs;
