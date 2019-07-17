@@ -137,7 +137,7 @@ public class RegretInsertionConcurrentFast extends AbstractInsertionStrategy {
         }
 
         List<Job> jobs = new ArrayList<>(unassignedJobs);
-        TreeSet<VersionedInsertionData>[] priorityQueues = new TreeSet[vrp.getJobs().values().size() + 2];
+        TreeSet<VersionedInsertionData>[] priorityQueues = new TreeSet[vrp.getJobsInclusiveInitialJobsInRoutes().values().size() + 2];
         VehicleRoute lastModified = null;
         boolean firstRun = true;
         int updateRound = 0;
